@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saved Data</title>
+  <title>Saved Student Data</title>
 
   <style>
     body {
@@ -16,7 +16,17 @@
     h2 {
       text-align: center;
       color: #333;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+    }
+
+    #searchBox {
+      width: 95%;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      display: block;
+      font-size: 14px;
     }
 
     table {
@@ -26,39 +36,71 @@
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+      margin-top: 10px;
     }
 
     th {
       background: #6e8efb;
       color: white;
       padding: 12px;
+      font-size: 15px;
     }
 
     td {
       padding: 10px;
       border-bottom: 1px solid #eee;
-    }
-
-    tr:hover {
-      background-color: #f3f5ff;
-    }
-
-    #loading {
+      font-size: 14px;
       text-align: center;
-      color: #6e8efb;
-      font-size: 18px;
-      margin-bottom: 10px;
     }
 
-    a {
+    tr:hover { background: #f3f5ff; }
+
+    button.deleteBtn {
+      background: #ff4b4b;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    #pagination {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    #pagination button {
+      padding: 8px 15px;
+      border: none;
+      background: #556deb;
+      color: white;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #download {
       display: block;
       width: 200px;
-      margin: 20px auto;
-      background: #556deb;
-      text-align: center;
-      padding: 10px;
+      margin: 15px auto;
+      background: #1dbf73;
       color: white;
+      padding: 10px;
       border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    a.backBtn {
+      display: block;
+      width: 200px;
+      margin: 10px auto;
+      background: #556deb;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
       text-decoration: none;
     }
   </style>
@@ -67,7 +109,8 @@
 <body>
 
   <h2>📄 Saved Student Data</h2>
-  <div id="loading">Loading data...</div>
+
+  <input type="text" id="searchBox" placeholder="Search Name, Roll, Email...">
 
   <table>
     <thead>
@@ -77,42 +120,109 @@
         <th>Roll</th>
         <th>Email</th>
         <th>Seat</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody id="dataBody"></tbody>
   </table>
 
-  <a href="index.html">⬅ Back to Form</a>
+  <div id="pagination">
+    <button onclick="prevPage()">⬅ Previous</button>
+    <button onclick="nextPage()">Next ➡</button>
+  </div>
+
+  <a id="download" href="#">⬇ Download Excel (CSV)</a>
+  <a class="backBtn" href="index.html">⬅ Back to Form</a>
 
   <script>
-    const url = "https://script.google.com/macros/s/AKfycbxU0fDSDO4mtIwT1kvtqWCq29jc5R0TtJ7wU3vkZFix2pFeYSQqfIe8tyeTOczQjYCayg/exec?action=get";  // 👈 Replace
+    const url = "YOUR_SCRIPT_WEBAPP_URL?action=get"; 
+    let allData = [];
+    let currentPage = 1;
+    const rowsPerPage = 10;
 
-    async function loadData() {
-      try {
-        const res = await fetch(url);
-        const rows = await res.json();
+    function renderTable() {
+      let output = "";
+      let start = (currentPage - 1) * rowsPerPage;
+      let end = start + rowsPerPage;
+      let paginated = allData.slice(start, end);
 
-        let output = "";
-        rows.forEach(r => {
-          output += `
+      paginated.forEach((r, i) => {
+        output += `
           <tr>
             <td>${r.date}</td>
             <td>${r.name}</td>
             <td>${r.roll}</td>
             <td>${r.email}</td>
             <td>${r.seat}</td>
+            <td><button class="deleteBtn" onclick="deleteRow(${start + i + 2})">Delete</button></td>
           </tr>`;
-        });
+      });
 
-        document.getElementById("dataBody").innerHTML = output;
-        document.getElementById("loading").style.display = "none";
+      document.getElementById("dataBody").innerHTML = output;
+    }
 
-      } catch {
-        document.getElementById("loading").innerHTML = "Error loading data!";
+    function nextPage() {
+      if (currentPage * rowsPerPage < allData.length) {
+        currentPage++;
+        renderTable();
       }
     }
 
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+      }
+    }
+
+    function searchFilter() {
+      const q = document.getElementById("searchBox").value.toLowerCase();
+
+      allData = allData.filter(r =>
+        r.name.toLowerCase().includes(q) ||
+        r.roll.toLowerCase().includes(q) ||
+        r.email.toLowerCase().includes(q)
+      );
+
+      currentPage = 1;
+      renderTable();
+    }
+
+    document.getElementById("searchBox").addEventListener("input", loadData);
+
+    async function loadData() {
+      try {
+        const res = await fetch(url);
+        allData = await res.json();
+        renderTable();
+      } catch (err) {
+        console.error("Error fetching data");
+      }
+    }
+
+    function downloadCSV() {
+      let csv = "Date,Name,Roll,Email,Seat\n";
+      allData.forEach(r => {
+        csv += `${r.date},${r.name},${r.roll},${r.email},${r.seat}\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      document.getElementById("download").href = url;
+      document.getElementById("download").download = "student_data.csv";
+    }
+
+    setInterval(loadData, 5000);
+
     loadData();
+    downloadCSV();
+
+    async function deleteRow(rowIndex) {
+      if (!confirm("Delete this record?")) return;
+
+      await fetch("YOUR_SCRIPT_WEBAPP_URL?action=delete&row=" + rowIndex);
+      loadData();
+    }
   </script>
 
 </body>
