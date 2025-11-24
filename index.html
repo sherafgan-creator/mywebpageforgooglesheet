@@ -8,12 +8,22 @@
     body {
       font-family: "Poppins", sans-serif;
       background: linear-gradient(135deg, #6e8efb, #a777e3);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       margin: 0;
     }
+
+    h2 {
+      margin-top: 20px;
+      text-align: center;
+      color: #fff;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
     form {
       width: 350px;
       padding: 30px;
@@ -21,17 +31,9 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       border-radius: 15px;
       animation: fadeIn 0.7s ease-in-out;
+      margin-top: 20px;
     }
-    h2 {
-      position: absolute;
-      top: 20px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      color: #fff;
-      font-size: 26px;
-      font-weight: 600;
-    }
+
     input {
       width: 100%;
       padding: 12px;
@@ -41,10 +43,12 @@
       font-size: 15px;
       transition: 0.3s;
     }
+
     input:focus {
       border-color: #6e8efb;
       box-shadow: 0 0 5px rgba(110, 142, 251, 0.5);
     }
+
     button {
       width: 100%;
       padding: 12px;
@@ -56,40 +60,56 @@
       cursor: pointer;
       transition: 0.3s;
     }
+
     button:hover {
       background: #556deb;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    #progress {
+      display:none;
+      width: 55%;
+      background:#e0e0e0;
+      margin:5px auto 0 auto;
+      border-radius:4px;
+      overflow:hidden;
+      height:4px;
+    }
+
+    #bar {
+      height:100%;
+      width:0%;
+      background:#6e8efb;
+      transition:0.3s;
+    }
+
     @media (max-width: 480px) {
       form {
         width: 90%;
         padding: 25px;
         border-radius: 12px;
       }
-      body {
-        padding: 10px;
-        background: linear-gradient(135deg, #6e8efb, #a777e3);
-      }
       input, button {
         font-size: 14px;
         padding: 10px;
       }
       h2 {
-        font-size: 20px;
+        font-size: 22px;
+      }
+      #progress {
+        width: 80%;
       }
     }
   </style>
 </head>
+
 <body>
+
   <h2>Student Information Form</h2>
-  <div id="progress" style="display:none; width:55%; background:#e0e0e0; margin:15px auto 0 auto; border-radius:4px; overflow:hidden; height:4px;">
-    <div id="bar" style="height:25%; width:0%; background:#6e8efb; transition:0.3s;"></div>
-  </div>
-  </div>
-  </div>
 
   <form id="studentForm">
     <input type="text" id="name" placeholder="Name" required />
@@ -98,6 +118,28 @@
     <input type="text" id="seat" placeholder="Seat Number" required />
     <button type="submit">Submit</button>
   </form>
+
+  <!-- Progress Bar (Form ke Niche) -->
+  <div id="progress">
+    <div id="bar"></div>
+  </div>
+
+  <!-- VIEW DATA BUTTON -->
+  <a href="view.html" 
+     style="
+       display:block;
+       text-align:center;
+       margin-top:15px;
+       font-size:15px;
+       text-decoration:none;
+       color:#fff;
+       background:#556deb;
+       padding:10px 20px;
+       border-radius:8px;
+       width:200px;
+     ">
+    📄 View Saved Data
+  </a>
 
   <script>
     document.getElementById("studentForm").addEventListener("submit", async function (e) {
@@ -110,51 +152,33 @@
         seat: document.getElementById("seat").value,
       };
 
-      // 👉 Replace with your Google Apps Script Web App URL
-      const scriptURL = "https://script.google.com/macros/s/AKfycbxU0fDSDO4mtIwT1kvtqWCq29jc5R0TtJ7wU3vkZFix2pFeYSQqfIe8tyeTOczQjYCayg/exec";
+      const scriptURL = "YOUR_SCRIPT_URL_HERE";
 
       try {
         document.getElementById("progress").style.display = "block";
         document.getElementById("bar").style.width = "50%";
 
-        const response = await fetch(scriptURL, {
+        await fetch(scriptURL, {
           method: "POST",
           mode: "no-cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
         });
+
         document.getElementById("bar").style.width = "100%";
+
         setTimeout(() => {
           document.getElementById("progress").style.display = "none";
           document.getElementById("bar").style.width = "0%";
           document.getElementById("studentForm").reset();
           alert("Data submitted successfully!");
         }, 600);
+
       } catch (error) {
         alert("Error! Could not submit data.");
       }
     });
   </script>
+
 </body>
-
-
-<!-- Google Apps Script Backend (paste this in Apps Script editor) -->
-<!--
-function doPost(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
-  const data = JSON.parse(e.postData.contents);
-
-  sheet.appendRow([
-    new Date(),
-    data.name,
-    data.roll,
-    data.email,
-    data.seat
-  ]);
-
-  return ContentService.createTextOutput("Success");
-}
--->
 </html>
