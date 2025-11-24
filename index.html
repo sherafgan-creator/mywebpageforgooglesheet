@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    form {
+      max-width: 400px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Student Information Form</h2>
+  <form id="studentForm">
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="text" id="roll" placeholder="Roll Number" required />
+    <input type="email" id="email" placeholder="Email ID" required />
+    <input type="text" id="seat" placeholder="Seat Number" required />
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    document.getElementById("studentForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById("name").value,
+        roll: document.getElementById("roll").value,
+        email: document.getElementById("email").value,
+        seat: document.getElementById("seat").value,
+      };
+
+      // 👉 Replace with your Google Apps Script Web App URL
+      const scriptURL = "YOUR_GOOGLE_APPS_SCRIPT_URL";
+
+      try {
+        const response = await fetch(scriptURL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        alert("Data submitted successfully!");
+      } catch (error) {
+        alert("Error! Could not submit data.");
+      }
+    });
+  </script>
+</body>
+
+
+<!-- Google Apps Script Backend (paste this in Apps Script editor) -->
+<!--
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+  const data = JSON.parse(e.postData.contents);
+
+  sheet.appendRow([
+    new Date(),
+    data.name,
+    data.roll,
+    data.email,
+    data.seat
+  ]);
+
+  return ContentService.createTextOutput("Success");
+}
+-->
+</html>
