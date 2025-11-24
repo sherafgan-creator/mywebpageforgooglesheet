@@ -85,6 +85,10 @@
 </head>
 <body>
   <h2>Student Information Form</h2>
+  <div id="progress" style="display:none; width:100%; background:#eee; margin-bottom:15px; border-radius:8px; overflow:hidden;">
+    <div id="bar" style="height:10px; width:0%; background:#6e8efb; transition:0.4s;"></div>
+  </div>
+
   <form id="studentForm">
     <input type="text" id="name" placeholder="Name" required />
     <input type="text" id="roll" placeholder="Roll Number" required />
@@ -108,6 +112,9 @@
       const scriptURL = "https://script.google.com/macros/s/AKfycbxU0fDSDO4mtIwT1kvtqWCq29jc5R0TtJ7wU3vkZFix2pFeYSQqfIe8tyeTOczQjYCayg/exec";
 
       try {
+        document.getElementById("progress").style.display = "block";
+        document.getElementById("bar").style.width = "50%";
+
         const response = await fetch(scriptURL, {
           method: "POST",
           mode: "no-cors",
@@ -116,7 +123,13 @@
           },
           body: JSON.stringify(data),
         });
-        alert("Data submitted successfully!");
+        document.getElementById("bar").style.width = "100%";
+        setTimeout(() => {
+          document.getElementById("progress").style.display = "none";
+          document.getElementById("bar").style.width = "0%";
+          document.getElementById("studentForm").reset();
+          alert("Data submitted successfully!");
+        }, 600);
       } catch (error) {
         alert("Error! Could not submit data.");
       }
