@@ -1,27 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Form</title>
+
   <style>
     body {
       font-family: "Poppins", sans-serif;
       background: linear-gradient(135deg, #6e8efb, #a777e3);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       margin: 0;
-    }
-
-    h2 {
-      margin-top: 20px;
-      text-align: center;
-      color: #fff;
-      font-size: 26px;
-      font-weight: 600;
+      padding-top: 60px;
     }
 
     form {
@@ -30,8 +23,16 @@
       background: #fff;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       border-radius: 15px;
-      animation: fadeIn 0.7s ease-in-out;
-      margin-top: 20px;
+    }
+
+    h2 {
+      position: absolute;
+      top: 15px;
+      width: 100%;
+      text-align: center;
+      color: #fff;
+      font-size: 26px;
+      font-weight: bold;
     }
 
     input {
@@ -41,12 +42,6 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 15px;
-      transition: 0.3s;
-    }
-
-    input:focus {
-      border-color: #6e8efb;
-      box-shadow: 0 0 5px rgba(110, 142, 251, 0.5);
     }
 
     button {
@@ -58,51 +53,38 @@
       font-size: 16px;
       border-radius: 8px;
       cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #556deb;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     #progress {
-      display:none;
-      width: 55%;
-      background:#e0e0e0;
-      margin:5px auto 0 auto;
-      border-radius:4px;
-      overflow:hidden;
-      height:4px;
+      display: none;
+      width: 60%;
+      background: #dcdcdc;
+      margin: 10px auto;
+      border-radius: 4px;
+      overflow: hidden;
+      height: 5px;
     }
 
     #bar {
-      height:100%;
-      width:0%;
-      background:#6e8efb;
-      transition:0.3s;
+      height: 100%;
+      width: 0%;
+      background: #6e8efb;
+      transition: 0.4s;
     }
 
-    @media (max-width: 480px) {
-      form {
-        width: 90%;
-        padding: 25px;
-        border-radius: 12px;
-      }
-      input, button {
-        font-size: 14px;
-        padding: 10px;
-      }
-      h2 {
-        font-size: 22px;
-      }
-      #progress {
-        width: 80%;
-      }
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #fff;
+      background: #556deb;
+      padding: 10px;
+      border-radius: 8px;
+      width: 60%;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -111,35 +93,19 @@
 
   <h2>Student Information Form</h2>
 
-  <form id="studentForm">
-    <input type="text" id="name" placeholder="Name" required />
-    <input type="text" id="roll" placeholder="Roll Number" required />
-    <input type="email" id="email" placeholder="Email ID" required />
-    <input type="text" id="seat" placeholder="Seat Number" required />
-    <button type="submit">Submit</button>
-  </form>
-
-  <!-- Progress Bar (Form ke Niche) -->
   <div id="progress">
     <div id="bar"></div>
   </div>
 
-  <!-- VIEW DATA BUTTON -->
-  <a href="view.html" 
-     style="
-       display:block;
-       text-align:center;
-       margin-top:15px;
-       font-size:15px;
-       text-decoration:none;
-       color:#fff;
-       background:#556deb;
-       padding:10px 20px;
-       border-radius:8px;
-       width:200px;
-     ">
-    📄 View Saved Data
-  </a>
+  <form id="studentForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="text" id="roll" placeholder="Roll Number" required>
+    <input type="email" id="email" placeholder="Email ID" required>
+    <input type="text" id="seat" placeholder="Seat Number" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <a href="view.html">📄 View Saved Data</a>
 
   <script>
     document.getElementById("studentForm").addEventListener("submit", async function (e) {
@@ -152,12 +118,12 @@
         seat: document.getElementById("seat").value,
       };
 
-      const scriptURL = "https://script.google.com/macros/s/AKfycbxU0fDSDO4mtIwT1kvtqWCq29jc5R0TtJ7wU3vkZFix2pFeYSQqfIe8tyeTOczQjYCayg/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxU0fDSDO4mtIwT1kvtqWCq29jc5R0TtJ7wU3vkZFix2pFeYSQqfIe8tyeTOczQjYCayg/exec"; // 👈 Replace
+
+      document.getElementById("progress").style.display = "block";
+      document.getElementById("bar").style.width = "50%";
 
       try {
-        document.getElementById("progress").style.display = "block";
-        document.getElementById("bar").style.width = "50%";
-
         await fetch(scriptURL, {
           method: "POST",
           mode: "no-cors",
@@ -174,7 +140,7 @@
           alert("Data submitted successfully!");
         }, 600);
 
-      } catch (error) {
+      } catch {
         alert("Error! Could not submit data.");
       }
     });
