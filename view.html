@@ -3,6 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Records</title>
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      background: white;
+      border-collapse: collapse;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align:left;
+    }
+    th {
+      background: #6e8efb;
+      color:white;
+    }
+    button {
+      padding: 5px 10px;
+      background:red;
+      border:none;
+      color:white;
+      border-radius:5px;
+      cursor:pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Saved Student Data</h2>
+
+<table id="dataTable">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Roll</th>
+      <th>Email</th>
+      <th>Seat</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+const url = "https://script.google.com/macros/s/AKfycbxU0fDSDO4mtIwT1kvtqWCq29jc5R0TtJ7wU3vkZFix2pFeYSQqfIe8tyeTOczQjYCayg/exec?action=get"; 
+
+// Load data automatically
+loadData();
+
+// Fetch data
+function loadData() {
+  fetch(scriptURL + "?action=get")
+    .then(res => res.json())
+    .then(data => buildTable(data));
+}
+
+// Build Table
+function buildTable(data) {
+  let tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "";
+
+  data.forEach((item, i) => {
+    let actualRow = i + 2; // Correct row number for Google Sheet
+
+    let row = `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${item.name}</td>
+        <td>${item.roll}</td>
+        <td>${item.email}</td>
+        <td>${item.seat}</td>
+        <td>
+          <button onclick="deleteRow(${actualRow})">Delete</button>
+        </td>
+      </tr>
+    `;
+    tbody.innerHTML += row;
+  });
+}
+
+// Delete a row
+function deleteRow(rowNumber) {
+  if (!confirm("Delete this record?")) return;
+
+  fetch(`${scriptURL}?action=delete&row=${rowNumber}`)
+    .then(() => loadData());  // refresh table
+}
+</script>
+
+</body>
+</html>
+
+
+<!--
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Saved Student Data</title>
 
   <style>
@@ -226,4 +337,4 @@
   </script>
 
 </body>
-</html>
+</html>    -->
